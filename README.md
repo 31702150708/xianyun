@@ -1,6 +1,6 @@
 # xianyun
 
-> My scrumtrulescent Nuxt.js project
+> My luminous Nuxt.js project
 
 ## Build Setup
 
