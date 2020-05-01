@@ -1,11 +1,32 @@
 <template>
   <div>
-    <el-cascader-panel :options="options" :props="{ expandTrigger: 'hover' } " class="hover"></el-cascader-panel>
+    <div class="liebiao">
+      <ul>
+        <li>
+          热门城市
+          <i class="el-icon-arrow-right"></i>
+        </li>
+        <li>
+          热门城市
+          <i class="el-icon-arrow-right"></i>
+        </li>
+        <li>
+          热门城市
+          <i class="el-icon-arrow-right"></i>
+        </li>
+        <li>
+          热门城市
+          <i class="el-icon-arrow-right"></i>
+        </li>
+      </ul>
+    </div>
 
     <!-- 推荐城市 -->
     <div class="recommend">
-      <span>推荐城市</span>
-      <img src="http://157.122.54.189:9093/images/pic_sea.jpeg" />
+      <span class="tuijian">推荐城市</span>
+      <a href="#">
+        <img src="http://157.122.54.189:9093/images/pic_sea.jpeg" />
+      </a>
     </div>
   </div>
 </template>
@@ -17,17 +38,7 @@ export default {
       options: [
         {
           value: "zhinan",
-          label: "指南",
-          children: [
-            {
-              value: "shejiyuanze",
-              label: "设计原则"
-            },
-            {
-              value: "daohang",
-              label: "导航"
-            }
-          ]
+          label: "指南"
         }
       ]
     };
@@ -44,24 +55,35 @@ export default {
 </script>
 
 <style scoped lang="less" >
-/deep/ .el-button {
-  width: 250px;
-  border-radius: nowrap;
-  display: block;
-}
-.el-button--primary {
-  color: black;
-  background-color: #ffffff;
-  border-color: #eeeeee;
+// 列表
+.liebiao {
+  margin-top: 15px;
+  ul {
+    li {
+      width: 100%;
+      height: 40px;
+      line-height: 40px;
+      border: 1px solid #eeeeee;
+      padding-left: 20px;
+      font-size: 14px;
+    }
+  }
 }
 // 推荐城市
 .recommend {
   span {
+    display: block;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
     border-bottom: 1px solid #eeeeee;
+    padding-top: 15px;
   }
   img {
-    width: 100px;
-    height: 100px;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    margin-top: 10px;
   }
 }
 </style>

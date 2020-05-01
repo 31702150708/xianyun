@@ -3,14 +3,14 @@
     <el-row type="flex" class="row-bg">
       <!-- 左边 -->
       <el-col :span="6">
-        <div class="bg-purple">
+        <div>
           <pulldown />
         </div>
       </el-col>
 
       <!-- 右边 -->
-      <el-col :span="18">
-        <div class="grid-content bg-purple-light">
+      <el-col :span="18" class="youbian">
+        <div class="grid-content">
           <!-- 输入框 -->
           <el-input placeholder="请输入你想去的地方，比如'广州'" v-model="input3" class="input-with-select">
             <el-button slot="append" icon="el-icon-search" class="el-button"></el-button>
@@ -36,10 +36,10 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="currentPage4"
-          :page-sizes="[100, 200, 300, 400]"
+          :page-sizes="[5, 10, 15, 20]"
           :page-size="100"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="400"
+          :total="40"
         ></el-pagination>
       </el-col>
     </el-row>
@@ -81,6 +81,10 @@ export default {
   width: 1000px;
   margin: 0 auto;
   height: 800px;
+  .youbian {
+    margin-left: 40px;
+    margin-top: 10px;
+  }
 }
 .el-row {
   margin-bottom: 20px;
@@ -92,9 +96,7 @@ export default {
 .bg-purple-dark {
   background: #99a9bf;
 }
-.bg-purple {
-  background: #d3dce6;
-}
+
 .bg-purple-light {
   background: #e5e9f2;
 }
@@ -104,7 +106,7 @@ export default {
 }
 .row-bg {
   padding: 10px 0;
-  background-color: #f9fafc;
+  // background-color: #f9fafc;
 }
 // 搜索框样式
 .input-with-select {
@@ -119,9 +121,21 @@ export default {
   display: flex;
   border-bottom: 2px solid #eeeeee;
   justify-content: space-between;
+  margin-top: 20px;
   .strategy {
     align-items: center;
     border-bottom: 2px solid #ffa500;
+  }
+}
+// 输入框模块
+.grid-content {
+  .tuijian {
+    font-size: 12px;
+    color: #858585;
+    margin-top: 10px;
+    a {
+      margin-right: 10px;
+    }
   }
 }
 </style>
