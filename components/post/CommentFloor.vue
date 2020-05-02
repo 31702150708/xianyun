@@ -2,18 +2,20 @@
   <div>
     <div class="comment-floor">
       <!-- 组件在这个位置自己调用自己 -->
-      <!-- <commentFloor /> -->
-
       <div class="floor-top">
         <div class="user">
-          <!-- <span>{{count}}</span> -->
-          <em>天青茯苓</em>
-          <span>2020/4/3</span>
+          <em>{{data.account.nickname}}</em>
+          <span>{{data.created_at | dateForm}}</span>
+          <span>{{data.level}}</span>
         </div>
         <!-- 点击回复按钮时候触发父组件传递过来的回复函数 -->
       </div>
-      <div class="content">这个是什么</div>
-      <span class="reply" @click="handleReply()">回复</span>
+      <commentFloor v-if="data.parent" :data="data.parent" @reply="handleReply" />
+      <div class="content">{{data.content}}</div>
+      <div class="picture">
+        <img src alt />
+      </div>
+      <span class="reply" @click="handleReply(data)">回复</span>
     </div>
   </div>
 </template>
@@ -22,6 +24,11 @@
 import moment from "moment";
 import { log } from "util";
 export default {
+  filters: {
+    dateForm(time) {
+      return moment(new Date(time)).format("YYYY-MM-DD HH:MM");
+    }
+  },
   name: "commentFloor",
   data() {
     return {
@@ -34,7 +41,7 @@ export default {
     // 组件内部的回复的事件
     handleReply(data) {
       // 触发父组件传递过来的reply函数
-      // this.$emit("reply", data);
+      this.$emit("reply", data);
     }
   }
 };

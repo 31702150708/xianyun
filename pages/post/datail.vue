@@ -3,42 +3,20 @@
     <el-col :span="17">
       <div class="Left_layout">
         <span>旅游攻略/攻略详情</span>
-        <h6>塞班贵？一定是你的打开方式不对！6000块玩转塞班</h6>
+        <h6>{{detailData.title}}</h6>
         <!-- 横线 -->
         <div class="box"></div>
         <!--攻略 阅读 -->
         <div class="ntroduction_reading">
           <div>
-            <span>攻略2019-05-22 10:57</span>
-            <span>阅读：15214</span>
+            <span>攻略{{detailData.city.created_at}}</span>
+            <span>阅读：{{detailData.watch}}</span>
           </div>
         </div>
         <!-- 标题 -->
-        <div class="Title">
-          <span>大家对塞班岛总存在着这样的误解，知道它是美属地盘，就理所当然地觉得这里的花费一定很高，花费高有高的玩法，那如果只有6000块的预算呢？要怎么玩？关于旅行这件事，我们要让钱花得更有道理，收下这份攻略，带你6000块花式玩转塞班。</span>
-          <!-- 图片 -->
-          <div class="image">
-            <img src="../../assets/23.png" alt />
-            <span>图：塞班岛。 by第5季旅游</span>
-          </div>
-        </div>
-        <h5></h5>
+
         <!-- 内容 -->
-        <div class="content">
-          <div>
-            <h5>一、怎样用6000块玩转塞班?</h5>
-            <span>大多数出境游客人不做预算或最终花费远远超出预算，对预算的合理分配对控制我们旅行的花费就很重要了，如何只花6000块玩转塞班岛，对预算超支say no？下面从5个方面来为您一一解读：机票+酒店、岛上交通、玩乐项目、吃以及购买纪念品</span>
-            <img src="../../assets/6@2x.png" alt />
-            <p class="box1">
-              <img src="../../assets/23.png" alt />
-            </p>
-            <span>
-              怎样去塞班？可以转机也可以直飞，转机大多会从韩国转，提前蹲守能买到韩国飞塞班的特价机票，2000以下就能入手，加上国内飞韩国的机票来回塞班得5000+，还没算上在塞班的住宿费用，转机还有中途等待的时间，光花在路途上的时间就比直飞要多上一倍甚至更多，转乘奔波劳累，非联程票还要担心行李托运问题，所以建议大家有直飞还是尽量选择直飞。
-              在酒店上，旅途中我们呆在酒店的时间远比在外游玩的时间少，酒店干净整洁基本就能满足我们休息的需求，塞班不是个享受酒店的地方而且还真不能跟国内星级酒店等位比较，所以不建议大家花过多的钱在塞班的酒店体验上。
-              怎样在机票酒店上获得最高性价比的体验？ 直飞塞班的航班一般和酒店一起打包成机票+酒店套餐，价格要比单定机票、酒店要更加便捷实惠，往往3千多就能把机票和酒店一键搞定。
-            </span>
-          </div>
-        </div>
+        <div class="content1" v-html="detailData.content"></div>
         <!-- 评论 -->
         <div class="comment">
           <div class="comment_in">
@@ -52,7 +30,15 @@
           <!-- 发表 -->
           <div class="form">
             <span>评论</span>
-            <div class="glyuan">回复管理员</div>
+            <div class="glyuan">
+              <el-tag
+                type="info"
+                closable
+                class="replyTag"
+                v-if="isTagShow"
+                @close="closeTag"
+              >回复：@{{nickname}}</el-tag>
+            </div>
             <el-input
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 6}"
@@ -60,15 +46,19 @@
               v-model="textarea2"
             ></el-input>
             <div class="box3">
-              <el-button type="primary">主要按钮</el-button>
+              <el-button type="primary" @click="submitComment">发布按钮</el-button>
             </div>
             <!-- 图片上传 -->
             <div class="box4">
               <el-upload
-                action="https://jsonplaceholder.typicode.com/posts/"
+                :action="`${$axios.defaults.baseURL}/upload`"
                 list-type="picture-card"
+                name="files"
+                :limit="3"
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
+                :file-list="fileList"
+                :on-success="fileUploadSuccess"
               >
                 <i class="el-icon-plus"></i>
               </el-upload>
@@ -78,35 +68,45 @@
             </el-dialog>
           </div>
           <!--  评论-->
-          <div>
-            <div class="comment1">
+          <div class="comment_frame">
+            <div class="comment1" v-for="(item, index) in comment" :key="index">
               <div class="comment-top">
                 <div class="user">
-                  <img src="../../assets/6@2x.png" />
+                  <img :src="$axios.defaults.baseURL+item.account.defaultAvatar" />
                   <div class="user-info">
-                    <p>天青茯苓</p>
+                    <p>{{item.account.nickname}}</p>
                     <!-- moment().fromNow 就是显示距离到当前的时间 -->
-                    <span>一天前</span>
+                    <span>{{item.created_at | dateForm}}</span>
+                    <span>{{item.level}}</span>
                   </div>
                 </div>
               </div>
-              <div class="content">那个是什么</div>
-              <span class="reply" @click="handleReply">回复</span>
+              <CommentFloor v-if="item.parent" :data="item.parent" @reply="handleReply" />
+              <div class="content">{{item.content}}</div>
+              <div class="picture" v-for="(item1, index1) in item.pics" :key="index1">
+                <img :src="$axios.defaults.baseURL+item1.url" alt />
+              </div>
+              <span class="reply" @click="handleReply(item)">回复</span>
               <!-- 递归组件 -->
-              <CommentFloor />
             </div>
           </div>
         </div>
         <!-- 分页 -->
         <div class="paging">
+          <!-- 分页组件 -->
+          <!-- size-change: 分页条数切换时候触发的事件 -->
+          <!-- current-change: 页数切换触发的事件 -->
+          <!-- current-page: 当前页数 -->
+          <!-- page-size：当前显示的条数 -->
+          <!-- total: 总条数 -->
           <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
-            :current-page="currentPage4"
-            :page-sizes="[100, 200, 300, 400]"
-            :page-size="100"
+            :current-page="pageIndex"
+            :page-sizes="[2, 4, 6, 8]"
+            :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="400"
+            :total="+total"
           ></el-pagination>
         </div>
       </div>
@@ -118,13 +118,18 @@
         <span>相关攻略</span>
       </div>
 
-      <div class="related_biaoti">
+      <div
+        class="related_biaoti"
+        :to="`/post/detail?id=${item.id}`"
+        v-for="(item, index) in xiangguangl"
+        :key="index"
+      >
         <div class="related_r">
-          <img src="../../assets/232.png" alt />
+          <img :src="$axios.defaults.baseURL+item.images[0]" alt />
         </div>
         <div class="related_l">
-          <span>小黑屋一日</span>
-          <p>2020-04-13 2:02 阅读 60</p>
+          <span>{{item.title}}</span>
+          <p>{{item.created_at | dateForm}} 阅读 -{{item.watch }}</p>
         </div>
       </div>
       <div class="related_biaoti">
@@ -142,27 +147,93 @@
 moment.locale("zh-CN");
 import moment from "moment";
 import CommentFloor from "@/components/post/CommentFloor.vue";
+import { log } from "util";
 export default {
   components: {
     CommentFloor
   },
+  filters: {
+    dateForm(time) {
+      return moment(new Date(time)).format("YYYY-MM-DD HH:MM");
+    }
+  },
   data() {
     return {
+      isTagShow: false, //切换
+      nickname: "", //回复的名字
+      follow: false, //回复id
+      iSfo: false,
+      // 文章
+      detailData: {
+        city: {}
+      },
+      // 评论数据
+      comment: [],
+      fileList: [],
+      pics: [], // 图片上传列表
+      // 相关攻略
+      xiangguangl: [],
+      // 发布框的数据
       textarea2: "",
       dialogImageUrl: "",
       dialogVisible: false,
-      currentPage1: 5,
-      currentPage2: 5,
-      currentPage3: 5,
-      currentPage4: 4
+      // 当前页数
+      pageIndex: 1,
+      // 当前条数
+      pageSize: 5,
+      // 总跳数
+      total: "",
+      // 回复评论的对象
+      reply: {} //,\
     };
   },
+  mounted() {
+    this.getCommentData();
+    // 页面内容请求
+    this.$axios({
+      url: "/posts",
+      params: {
+        id: this.$route.query.id
+      }
+    }).then(res => {
+      // console.log(res);
+
+      this.detailData = res.data.data[0];
+    });
+    // 先关攻略
+    this.$axios({
+      url: "/posts/recommend"
+    }).then(res => {
+      this.xiangguangl = res.data.data;
+    });
+  },
   methods: {
-    // 图片上传组件
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
+    // 评论请求
+    getCommentData() {
+      this.$axios({
+        url: "/posts/comments",
+        params: {
+          post: this.$route.query.id,
+          _limit: this.pageSize,
+          _start: this.pageIndex - 1
+        }
+      }).then(res => {
+        const { data, total } = res.data;
+        console.log(data);
+
+        this.total = total;
+        this.comment = data;
+      });
     },
-    // 图片上传组件
+    // 图片移除
+    handleRemove(file, fileList) {
+      this.fileList = fileList;
+    },
+    // 图片上传是回调
+    fileUploadSuccess(response, file, fileList) {
+      this.pics = [...this.pics, ...response];
+    },
+    // 图片上预览
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
@@ -170,13 +241,77 @@ export default {
     // 分页组件
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+      this.getCommentData();
     },
     // 分页组件
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
+      this.pageIndex = val;
+      this.getCommentData();
     },
-    // 回复
-    handleReply() {}
+
+    // 回复..............................................................
+
+    handleReply(data) {
+      this.follow = data.id;
+
+      this.nickname = data.account.nickname;
+      console.log(this.nickname);
+      this.isTagShow = true;
+
+      // 点击回复跳转到
+      const cmt = this.$el.querySelector(".form");
+      this.$nextTick(() => {
+        document.querySelector("html").scrollTop = cmt.offsetTop;
+      });
+    },
+
+    // 点击回复拿到当前点击对对象信息
+    closeTag() {
+      this.isTagShow = false;
+      this.follow = false;
+    },
+
+    // 失去焦点输入框
+    handleshiqu() {
+      this.iSfo = false;
+    },
+    // 获得焦点输入框
+    handlehuodei() {
+      this.iSfo = true;
+    },
+
+    submitComment() {
+      if (!this.textarea2 && !this.pics.length) {
+        this.$message.error("输入内容不能为空");
+        return;
+      }
+      const data = {
+        post: +this.$route.query.id,
+        content: this.textarea2,
+        pics: this.pics
+      };
+      if (this.follow) {
+        data.follow = this.follow;
+      }
+
+      this.$axios({
+        url: "/comments",
+        method: "POST",
+        data,
+
+        headers: {
+          Authorization: "Bearer " + this.$store.state.user.userInfo.token
+        }
+      }).then(res => {
+        this.pics = [];
+        this.textarea2 = [];
+        this.getCommentData();
+        this.fileList = [];
+        this.closeTag();
+      });
+    }
   }
 };
 </script>
@@ -235,6 +370,22 @@ export default {
   .Left_layout {
     // 标题
     margin-top: 20px;
+    // ********************
+    .content1 {
+      /deep/p {
+        text-indent: 2em;
+        line-height: 25px;
+        padding: 10px 0;
+        span {
+          display: block;
+          margin: 10px 0;
+        }
+      }
+      /deep/img {
+        display: block;
+        width: 100%;
+      }
+    }
     // 标题大小
     h6 {
       margin-top: 20px;
@@ -264,25 +415,13 @@ export default {
     .ntroduction_reading {
       margin-top: 20px;
       margin-left: 420px;
+      margin-bottom: 20px;
       color: rgb(163, 163, 163);
     }
     // 图片标题
   }
   // <!-- 内容 -->
-  .content {
-    margin-top: -50px;
-    h5 {
-      font-size: 28px;
-    }
-    .box1 {
-      margin-top: 50px;
-      margin-bottom: 50px;
-      img {
-        height: 510px;
-        width: 100%;
-      }
-    }
-  }
+
   // 评论
   .comment {
     // 评论分享
@@ -320,43 +459,58 @@ export default {
       }
     }
   }
-  // 评论列表
-  .comment1 {
-    margin-top: 60px;
-    padding: 20px;
+  .comment_frame {
+    margin-top: 40px;
     border: 1px #eee solid;
-    font-size: 13px;
-    margin-bottom: 60px;
-    .reply {
-      margin-left: 600px;
-    }
-  }
-  .comment-top {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-
-    .reply {
-      font-size: 12px;
-    }
-    .user {
-      display: flex;
-      align-items: center;
-      img {
-        display: block;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        margin-right: 5px;
+    // 评论列表
+    .comment1 {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px #eee solid;
+      font-size: 13px;
+      .reply {
+        margin-left: 600px;
       }
+      .picture {
+        img {
+          border: 1px rgb(136, 134, 134) solid;
+          float: left;
+          width: 90px;
+          height: 90px;
+          margin-right: 4px;
+          margin-top: 3px;
+        }
+      }
+    }
+    .comment-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
 
-      span {
-        color: #999;
+      .reply {
+        font-size: 12px;
+      }
+      .user {
+        display: flex;
+        align-items: center;
+        img {
+          display: block;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          margin-right: 5px;
+        }
+
+        span {
+          color: #999;
+          font-size: 12px;
+        }
+      }
+      .reply {
         font-size: 12px;
       }
     }
   }
-
   .content {
     margin-top: 20px;
   }
