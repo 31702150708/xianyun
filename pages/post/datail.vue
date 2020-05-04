@@ -21,8 +21,8 @@
         <div class="comment">
           <div class="comment_in">
             <div>
-              <img src="../../assets/dz.png" alt />
-              <img src="../../assets/232.png" alt />
+              <img src="" alt />
+              <img src="" alt />
             </div>
             <span>评论(100)</span>
             <span>分享(100)</span>
