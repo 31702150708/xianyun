@@ -98,7 +98,7 @@ export default {
     },
     toPostDetail() {
       this.$router.push({
-        path: "/post/detail",
+        path: "/post/datail",
         query: {
           id: this.cardContent.id
         }
