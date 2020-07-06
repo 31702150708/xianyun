@@ -2,6 +2,11 @@
 
 > My luminous Nuxt.js project
 
+
+http://157.122.54.189:9093/    
+
+在线链接
+
 ## Build Setup
 
 ```bash
